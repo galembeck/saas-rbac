@@ -24,6 +24,7 @@ import { getOrganizationsRoute } from "./http/routes/orgs/get-organizations";
 import { transferOwnershipRoute } from "./http/routes/orgs/transfer-ownership";
 import { updateOrganizationRoute } from "./http/routes/orgs/update-organization";
 import { createProjectRoute } from "./http/routes/projects/create-project";
+import { deleteProjectRoute } from "./http/routes/projects/delete-project";
 import { createAccountRoute } from "./http/routes/user/create-account";
 import { getProfileRoute } from "./http/routes/user/get-profile";
 
@@ -87,6 +88,7 @@ app.register(deleteOrganizationRoute);
 app.register(transferOwnershipRoute);
 
 app.register(createProjectRoute);
+app.register(deleteProjectRoute);
 
 app.listen({ port: env.PORT }).then(() => {
 	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);
