@@ -10,7 +10,8 @@ export async function requestPasswordRecoveryRoute(app: FastifyInstance) {
 		{
 			schema: {
 				tags: ["Auth"],
-				summary: "Recovery password by e-mail",
+				summary: "/password/recover",
+				description: "Recovery password by e-mail",
 				body: z.object({
 					email: z.email(),
 				}),

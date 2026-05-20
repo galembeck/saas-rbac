@@ -2,17 +2,19 @@ import { hash } from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { UserException } from "@/http/_errors/exceptions/user";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 
 // biome-ignore lint/suspicious/useAwait: required by @fastify
 export async function createAccountRoute(app: FastifyInstance) {
 	app.withTypeProvider<ZodTypeProvider>().post(
-		"/user",
+		"/users",
 		{
 			schema: {
 				tags: ["User"],
-				summary: "Create a new account",
+				summary: "/users",
+				description: "Create a new account",
 				body: z.object({
 					name: z.string(),
 					email: z.email(),
@@ -28,7 +30,7 @@ export async function createAccountRoute(app: FastifyInstance) {
 			});
 
 			if (userWithSameEmail) {
-				throw new BadRequestError("User with same e-mail already registered.");
+				throw new BadRequestError(null, UserException.EMAIL_ALREADY_REGISTERED);
 			}
 
 			const [, domain] = email.split("@");

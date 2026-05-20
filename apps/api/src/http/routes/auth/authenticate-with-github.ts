@@ -4,6 +4,7 @@ import { env } from "@repo/env";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { AuthException } from "@/http/_errors/exceptions/auth";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 
@@ -13,7 +14,8 @@ export async function authenticateWithGithubRoute(app: FastifyInstance) {
 		{
 			schema: {
 				tags: ["Auth"],
-				summary: "Authenticate with Github",
+				summary: "/sessions/github",
+				description: "Authenticate with Github",
 				body: z.object({
 					code: z.string(),
 				}),
@@ -85,9 +87,7 @@ export async function authenticateWithGithubRoute(app: FastifyInstance) {
 				.parse(githubUserData);
 
 			if (email === null) {
-				throw new BadRequestError(
-					"Your Github account must have an email address to authenticate."
-				);
+				throw new BadRequestError(null, AuthException.GITHUB_NO_EMAIL);
 			}
 
 			let user = await prisma.user.findUnique({
