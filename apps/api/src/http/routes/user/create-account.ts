@@ -3,14 +3,15 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { BadRequestError } from "../_errors/bad-request-error";
 
 // biome-ignore lint/suspicious/useAwait: required by @fastify
 export async function createAccountRoute(app: FastifyInstance) {
 	app.withTypeProvider<ZodTypeProvider>().post(
-		"/users",
+		"/user",
 		{
 			schema: {
-				tags: ["auth"],
+				tags: ["User"],
 				summary: "Create a new account",
 				body: z.object({
 					name: z.string(),
@@ -27,18 +28,32 @@ export async function createAccountRoute(app: FastifyInstance) {
 			});
 
 			if (userWithSameEmail) {
-				return reply
-					.status(400)
-					.send({ message: "User with same e-mail already registered." });
+				throw new BadRequestError("User with same e-mail already registered.");
 			}
 
-			const passwordHash = hash(password, 6);
+			const [, domain] = email.split("@");
+
+			const autoJoinOrganization = await prisma.organization.findFirst({
+				where: {
+					domain,
+					shouldAttachUsersByDomain: true,
+				},
+			});
+
+			const passwordHash = await hash(password, 6);
 
 			await prisma.user.create({
 				data: {
 					name,
 					email,
 					passwordHash,
+					member_on: autoJoinOrganization
+						? {
+								create: {
+									organizationId: autoJoinOrganization.id,
+								},
+							}
+						: undefined,
 				},
 			});
 
