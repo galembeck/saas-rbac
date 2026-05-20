@@ -17,19 +17,28 @@ export const errorHandler: FastifyErrorHandler = (error, request, reply) => {
 
 	if (error instanceof BadRequestError) {
 		return reply.status(400).send({
-			message: error.message,
+			statusCode: 400,
+			title: error.title,
+			message: error.code,
+			description: error.description,
 		});
 	}
 
 	if (error instanceof UnauthorizedError) {
 		return reply.status(401).send({
-			message: error.message,
+			statusCode: 401,
+			title: error.title,
+			message: error.code,
+			description: error.description,
 		});
 	}
 
 	if (error instanceof NotFoundError) {
 		return reply.status(404).send({
-			message: error.message,
+			statusCode: 404,
+			title: error.title,
+			message: error.code,
+			description: error.description,
 		});
 	}
 

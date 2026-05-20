@@ -2,6 +2,7 @@ import { compare } from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { AuthException } from "@/http/_errors/exceptions/auth";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 
@@ -12,7 +13,8 @@ export async function authenticateWithPasswordRoute(app: FastifyInstance) {
 		{
 			schema: {
 				tags: ["Auth"],
-				summary: "Authenticate with e-mail & password",
+				summary: "/sessions/password",
+				description: "Authenticate with e-mail & password",
 				body: z.object({
 					email: z.email(),
 					password: z.string(),
@@ -32,13 +34,11 @@ export async function authenticateWithPasswordRoute(app: FastifyInstance) {
 			});
 
 			if (!userFromEmail) {
-				throw new BadRequestError("Invalid credentials");
+				throw new BadRequestError(null, AuthException.INVALID_CREDENTIALS);
 			}
 
 			if (userFromEmail?.passwordHash === null) {
-				throw new BadRequestError(
-					"User does not have a password, use social login."
-				);
+				throw new BadRequestError(null, AuthException.USER_HAS_NO_PASSWORD);
 			}
 
 			const isPasswordValid = await compare(
@@ -47,7 +47,7 @@ export async function authenticateWithPasswordRoute(app: FastifyInstance) {
 			);
 
 			if (!isPasswordValid) {
-				throw new BadRequestError("Invalid credentials.");
+				throw new BadRequestError(null, AuthException.INVALID_CREDENTIALS);
 			}
 
 			const accessToken = await reply.jwtSign(

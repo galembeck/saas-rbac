@@ -16,6 +16,14 @@ import { authenticateWithGithubRoute } from "./http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "./http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "./http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "./http/routes/auth/reset-password";
+import { createOrganizationRoute } from "./http/routes/orgs/create-organization";
+import { deleteOrganizationRoute } from "./http/routes/orgs/delete-organization";
+import { getMembershipRoute } from "./http/routes/orgs/get-membership";
+import { getOrganizationRoute } from "./http/routes/orgs/get-organization";
+import { getOrganizationsRoute } from "./http/routes/orgs/get-organizations";
+import { transferOwnershipRoute } from "./http/routes/orgs/transfer-ownership";
+import { updateOrganizationRoute } from "./http/routes/orgs/update-organization";
+import { createProjectRoute } from "./http/routes/projects/create-project";
 import { createAccountRoute } from "./http/routes/user/create-account";
 import { getProfileRoute } from "./http/routes/user/get-profile";
 
@@ -49,7 +57,10 @@ app.register(fastifySwagger, {
 
 app.register(ScalarApiReference, {
 	routePrefix: "/docs",
-	configuration: { title: "SaaS RBAC | API" },
+	configuration: {
+		title: "SaaS RBAC | API",
+		layout: "classic",
+	},
 });
 
 app.register(fastifyJwt, {
@@ -66,6 +77,16 @@ app.register(requestPasswordRecoveryRoute);
 app.register(resetPasswordRoute);
 
 app.register(getProfileRoute);
+
+app.register(createOrganizationRoute);
+app.register(getMembershipRoute);
+app.register(getOrganizationRoute);
+app.register(getOrganizationsRoute);
+app.register(updateOrganizationRoute);
+app.register(deleteOrganizationRoute);
+app.register(transferOwnershipRoute);
+
+app.register(createProjectRoute);
 
 app.listen({ port: env.PORT }).then(() => {
 	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);

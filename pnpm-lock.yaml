@@ -38,12 +38,12 @@ importers:
       '@prisma/client':
         specifier: ^7.8.0
         version: 7.8.0(prisma@7.8.0(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(typescript@6.0.3)
-      '@repo/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@repo/env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@repo/rbac':
+        specifier: workspace:*
+        version: link:../../packages/rbac
       '@scalar/fastify-api-reference':
         specifier: ^1.57.2
         version: 1.57.2
@@ -156,25 +156,6 @@ importers:
 
   config/typescript-config: {}
 
-  packages/core:
-    dependencies:
-      '@casl/ability':
-        specifier: ^6.8.1
-        version: 6.8.1
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
-    devDependencies:
-      '@repo/eslint-config':
-        specifier: workspace:*
-        version: link:../../config/eslint-config
-      '@repo/prettier-config':
-        specifier: workspace:*
-        version: link:../../config/prettier-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../config/typescript-config
-
   packages/env:
     dependencies:
       '@t3-oss/env-nextjs':
@@ -196,6 +177,25 @@ importers:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
+
+  packages/rbac:
+    dependencies:
+      '@casl/ability':
+        specifier: ^6.8.1
+        version: 6.8.1
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../config/eslint-config
+      '@repo/prettier-config':
+        specifier: workspace:*
+        version: link:../../config/prettier-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../config/typescript-config
 
 packages:
 

@@ -2,6 +2,7 @@ import { hash } from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { AuthException } from "@/http/_errors/exceptions/auth";
 import { prisma } from "@/lib/prisma";
 import { UnauthorizedError } from "../_errors/unauthorized-error";
 
@@ -12,7 +13,8 @@ export async function resetPasswordRoute(app: FastifyInstance) {
 		{
 			schema: {
 				tags: ["Auth"],
-				summary: "Reset password by verifying a code",
+				summary: "/password/reset",
+				description: "Reset password by verifying a code",
 				body: z.object({
 					code: z.string(),
 					password: z.string().min(6),
@@ -27,7 +29,7 @@ export async function resetPasswordRoute(app: FastifyInstance) {
 			});
 
 			if (!tokenFromCode) {
-				throw new UnauthorizedError();
+				throw new UnauthorizedError(null, AuthException.UNAUTHORIZED);
 			}
 
 			const passwordHash = await hash(password, 6);
