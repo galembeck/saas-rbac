@@ -11,6 +11,7 @@ import {
 	type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { errorHandler } from "./http/error-handler";
+import { authenticateWithGithubRoute } from "./http/routes/auth/authenticate-with-github";
 import { authenticateWithPasswordRoute } from "./http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "./http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "./http/routes/auth/reset-password";
@@ -49,6 +50,8 @@ app.register(fastifyCors);
 
 app.register(createAccountRoute);
 app.register(authenticateWithPasswordRoute);
+app.register(authenticateWithGithubRoute);
+
 app.register(requestPasswordRecoveryRoute);
 app.register(resetPasswordRoute);
 
