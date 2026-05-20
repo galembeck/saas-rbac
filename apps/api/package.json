@@ -2,7 +2,11 @@
   "name": "@repo/api",
   "version": "1.0.0",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "pnpm env:load tsx watch src/server.ts",
+    "db:migrate": "pnpm env:load prisma migrate dev",
+    "db:seed": "pnpm env:load prisma db seed",
+    "db:studio": "pnpm env:load prisma studio",
+    "env:load": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
@@ -10,6 +14,7 @@
     "@fastify/swagger": "^9.7.0",
     "@prisma/client": "^7.8.0",
     "@repo/core": "workspace:*",
+    "@repo/env": "workspace:*",
     "@scalar/fastify-api-reference": "^1.57.2",
     "bcryptjs": "^3.0.3",
     "fastify": "^5.8.5",
@@ -27,6 +32,7 @@
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
     "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
     "tsx": "^4.22.3",

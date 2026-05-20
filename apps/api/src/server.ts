@@ -2,6 +2,7 @@ import "dotenv/config";
 import { fastifyCors } from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
 import { fastifySwagger } from "@fastify/swagger";
+import { env } from "@repo/env";
 import ScalarApiReference from "@scalar/fastify-api-reference";
 import { fastify } from "fastify";
 import {
@@ -33,6 +34,15 @@ app.register(fastifySwagger, {
 			version: "1.0.0",
 		},
 		servers: [],
+		components: {
+			securitySchemes: {
+				bearerAuth: {
+					type: "http",
+					scheme: "bearer",
+					bearerFormat: "JWT",
+				},
+			},
+		},
 	},
 	transform: jsonSchemaTransform,
 });
@@ -43,7 +53,7 @@ app.register(ScalarApiReference, {
 });
 
 app.register(fastifyJwt, {
-	secret: process.env.JWT_SECRET ?? "",
+	secret: env.JWT_SECRET ?? "",
 });
 
 app.register(fastifyCors);
@@ -57,9 +67,7 @@ app.register(resetPasswordRoute);
 
 app.register(getProfileRoute);
 
-const port = Number(process.env.PORT ?? 3333);
-
-app.listen({ port }).then(() => {
-	console.log(`🚀 | HTTP server running at http://localhost:${port}`);
-	console.log(`📝 | Docs available at http://localhost:${port}/docs`);
+app.listen({ port: env.PORT }).then(() => {
+	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);
+	console.log(`📝 | Docs available at http://localhost:${env.PORT}/docs`);
 });
