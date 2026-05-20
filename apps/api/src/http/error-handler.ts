@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
 import { ZodError, z } from "zod";
 import { BadRequestError } from "./routes/_errors/bad-request-error";
 import { NotFoundError } from "./routes/_errors/not-found-error";
@@ -8,6 +9,13 @@ type FastifyErrorHandler = FastifyInstance["errorHandler"];
 
 // biome-ignore lint/correctness/noUnusedFunctionParameters: required by @fastify error handler signature
 export const errorHandler: FastifyErrorHandler = (error, request, reply) => {
+	if (hasZodFastifySchemaValidationErrors(error)) {
+		return reply.status(400).send({
+			message: "Validation error",
+			errors: error.validation,
+		});
+	}
+
 	if (error instanceof ZodError) {
 		return reply.status(400).send({
 			message: "Validation error",

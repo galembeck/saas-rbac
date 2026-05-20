@@ -6,15 +6,18 @@
     "db:migrate": "pnpm env:load prisma migrate dev",
     "db:seed": "pnpm env:load prisma db seed",
     "db:studio": "pnpm env:load prisma studio",
-    "env:load": "dotenv -e ../../.env --"
+    "env:load": "dotenv -e ../../.env --",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.1.0",
     "@fastify/swagger": "^9.7.0",
     "@prisma/client": "^7.8.0",
-    "@repo/rbac": "workspace:*",
     "@repo/env": "workspace:*",
+    "@repo/rbac": "workspace:*",
     "@scalar/fastify-api-reference": "^1.57.2",
     "bcryptjs": "^3.0.3",
     "fastify": "^5.8.5",
@@ -31,12 +34,15 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "dotenv": "^17.4.2",
     "dotenv-cli": "^11.0.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.7"
   },
   "prettier": "@repo/prettier-config",
   "eslintConfig": {
