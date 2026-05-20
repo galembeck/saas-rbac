@@ -4,7 +4,7 @@ import {
 	createMongoAbility,
 	type MongoAbility,
 } from "@casl/ability";
-import z from "zod";
+import { z } from "zod";
 import type { User } from "./models/user.model";
 import { permissions } from "./permissions";
 import { billingSubject } from "./subjects/billing.subject";

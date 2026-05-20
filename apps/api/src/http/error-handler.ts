@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import z, { ZodError } from "zod";
+import { ZodError, z } from "zod";
 import { BadRequestError } from "./routes/_errors/bad-request-error";
 import { NotFoundError } from "./routes/_errors/not-found-error";
 import { UnauthorizedError } from "./routes/_errors/unauthorized-error";
