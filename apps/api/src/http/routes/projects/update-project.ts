@@ -12,21 +12,25 @@ import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { UnauthorizedError } from "../_errors/unauthorized-error";
 
-export async function deleteProjectRoute(app: FastifyInstance) {
+export async function updateProjectRoute(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
 		.register(auth)
-		.delete(
+		.put(
 			"/organizations/:slug/projects/:projectId",
 			{
 				schema: {
 					tags: ["Projects"],
 					summary: "/organizations/:slug/projects/:projectId",
-					description: "Delete a project inside an organization",
+					description: "Update a project inside an organization",
 					security: [{ bearerAuth: [] }],
 					params: z.object({
 						slug: z.string(),
 						projectId: z.uuid(),
+					}),
+					body: z.object({
+						name: z.string(),
+						description: z.string(),
 					}),
 				},
 			},
@@ -56,17 +60,23 @@ export async function deleteProjectRoute(app: FastifyInstance) {
 
 				const authProject = projectSchema.parse(project);
 
-				if (cannot("delete", authProject)) {
+				if (cannot("update", authProject)) {
 					throw new UnauthorizedError(
-						"You are not authorized to delete this project.",
+						"You are not authorized to update this project.",
 						AuthException.UNAUTHORIZED,
-						"User must have enough permission(s) in order to delete this project."
+						"User must have enough permission(s) in order to update this project."
 					);
 				}
 
-				await prisma.project.delete({
+				const { name, description } = request.body;
+
+				await prisma.project.update({
 					where: {
 						id: projectId,
+					},
+					data: {
+						name,
+						description,
 					},
 				});
 

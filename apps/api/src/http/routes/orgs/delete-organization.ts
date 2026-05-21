@@ -26,9 +26,6 @@ export async function deleteOrganizationRoute(app: FastifyInstance) {
 					params: z.object({
 						slug: z.string(),
 					}),
-					reponse: {
-						204: z.null(),
-					},
 				},
 			},
 			async (request, reply) => {
