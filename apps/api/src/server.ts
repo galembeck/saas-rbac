@@ -16,7 +16,13 @@ import { authenticateWithGithubRoute } from "./http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "./http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "./http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "./http/routes/auth/reset-password";
+import { acceptInviteRoute } from "./http/routes/invites/accept-invite";
 import { createInviteRoute } from "./http/routes/invites/create-invite";
+import { getInviteRoute } from "./http/routes/invites/get-invite";
+import { getInvitesRoute } from "./http/routes/invites/get-invites";
+import { getPendingInvitesRoute } from "./http/routes/invites/get-pending-invites";
+import { rejectInviteRoute } from "./http/routes/invites/reject-invite";
+import { revokeInviteRoute } from "./http/routes/invites/revoke-invite";
 import { getMembersRoute } from "./http/routes/members/get-members";
 import { removeMemberRoute } from "./http/routes/members/remove-member";
 import { updateMemberRoute } from "./http/routes/members/update-member";
@@ -105,6 +111,12 @@ app.register(updateMemberRoute);
 app.register(removeMemberRoute);
 
 app.register(createInviteRoute);
+app.register(getInviteRoute);
+app.register(getInvitesRoute);
+app.register(acceptInviteRoute);
+app.register(rejectInviteRoute);
+app.register(revokeInviteRoute);
+app.register(getPendingInvitesRoute);
 
 app.listen({ port: env.PORT }).then(() => {
 	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);

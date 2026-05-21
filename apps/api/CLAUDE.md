@@ -193,11 +193,28 @@ prismaMock.member.findFirst.mockResolvedValue({
 
 ### RBAC permission matrix
 
-| Role | Organization | Project |
-|------|-------------|---------|
-| ADMIN | manage all; update/transfer_ownership only if `ownerId === userId` | manage all |
-| MEMBER | — | create, get; update/delete own (`ownerId === userId`) |
-| BILLING | — | — |
+| Role | Organization | Project | Invite |
+|------|-------------|---------|--------|
+| ADMIN | manage all; update/transfer_ownership only if `ownerId === userId` | manage all | manage all |
+| MEMBER | — | create, get; update/delete own (`ownerId === userId`) | — |
+| BILLING | — | — | — |
+
+### Determining test cases from a route file
+
+Read the route file and map each branch to a test:
+
+1. **Every `throw` statement** → one error test case (check the exception code string, e.g. `NOT_FOUND`, `UNAUTHORIZED`)
+2. **Happy path** → one success test (200/201/204 depending on the route)
+3. **Protected routes** (`.register(auth)`):
+   - Add a 401 `INVALID_TOKEN` test with no `Authorization` header
+   - For RBAC-checked routes (`getUserPermissions` + `cannot(...)`): add 401 `UNAUTHORIZED` tests for each forbidden role (consult the matrix above)
+4. **UUID/slug params** on unprotected routes → add a 400 `Validation error` test with an invalid param
+
+For routes using `prisma.$transaction`, mock it as `prismaMock.$transaction.mockResolvedValue([])`.
+
+### Diagnosing 404 in tests
+
+If all tests in a new test file return **404**, the route is not registered in `src/test/helpers/build-app.ts`. Add the import and `await app.register(routeFn)` call there — it is separate from `src/server.ts`.
 
 ### Adding a new exception enum
 

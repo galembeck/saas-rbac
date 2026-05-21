@@ -11,7 +11,13 @@ import { authenticateWithGithubRoute } from "@/http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "@/http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "@/http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "@/http/routes/auth/reset-password";
+import { acceptInviteRoute } from "@/http/routes/invites/accept-invite";
 import { createInviteRoute } from "@/http/routes/invites/create-invite";
+import { getInviteRoute } from "@/http/routes/invites/get-invite";
+import { getInvitesRoute } from "@/http/routes/invites/get-invites";
+import { getPendingInvitesRoute } from "@/http/routes/invites/get-pending-invites";
+import { rejectInviteRoute } from "@/http/routes/invites/reject-invite";
+import { revokeInviteRoute } from "@/http/routes/invites/revoke-invite";
 import { getMembersRoute } from "@/http/routes/members/get-members";
 import { removeMemberRoute } from "@/http/routes/members/remove-member";
 import { updateMemberRoute } from "@/http/routes/members/update-member";
@@ -55,7 +61,13 @@ export async function buildApp() {
 	await app.register(updateOrganizationRoute);
 	await app.register(deleteOrganizationRoute);
 	await app.register(transferOwnershipRoute);
+	await app.register(acceptInviteRoute);
 	await app.register(createInviteRoute);
+	await app.register(getInviteRoute);
+	await app.register(getInvitesRoute);
+	await app.register(getPendingInvitesRoute);
+	await app.register(rejectInviteRoute);
+	await app.register(revokeInviteRoute);
 	await app.register(getMembersRoute);
 	await app.register(updateMemberRoute);
 	await app.register(removeMemberRoute);
