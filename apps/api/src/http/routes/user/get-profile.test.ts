@@ -69,7 +69,7 @@ describe("GET /users/profile", () => {
 		});
 	});
 
-	it("returns 404 USER_NOT_FOUND when user was deleted after token was issued", async () => {
+	it("returns 404 NOT_FOUND when user was deleted after token was issued", async () => {
 		const userId = faker.string.uuid();
 
 		prismaMock.user.findUnique.mockResolvedValue(null);
@@ -84,7 +84,7 @@ describe("GET /users/profile", () => {
 
 		expect(response.statusCode).toBe(404);
 		expect(JSON.parse(response.body)).toMatchObject({
-			message: "USER_NOT_FOUND",
+			message: "NOT_FOUND",
 		});
 	});
 });

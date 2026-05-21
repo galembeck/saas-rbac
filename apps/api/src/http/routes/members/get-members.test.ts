@@ -18,24 +18,21 @@ vi.mock("@/lib/prisma", async () => {
 	return { prisma: prismaMock };
 });
 
-function makeProject(organizationId: string, ownerId: string) {
+function makeMember(_organizationId: string) {
+	const userId = faker.string.uuid();
 	return {
 		id: faker.string.uuid(),
-		name: "Test Project",
-		description: "A test project",
-		slug: "test-project",
-		avatarUrl: null,
-		organizationId,
-		ownerId,
-		owner: {
-			id: ownerId,
+		role: "MEMBER" as const,
+		user: {
+			id: userId,
 			name: faker.person.fullName(),
+			email: faker.internet.email(),
 			avatarUrl: null,
 		},
 	};
 }
 
-describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
+describe("GET /organizations/:slug/members", () => {
 	let app: Awaited<ReturnType<typeof buildApp>>;
 
 	beforeAll(async () => {
@@ -50,44 +47,42 @@ describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
 		resetPrismaMocks();
 	});
 
-	it("returns the project for an ADMIN", async () => {
+	it("returns members list for ADMIN", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "ADMIN");
-		const project = makeProject(organization.id, faker.string.uuid());
+		const members = [makeMember(organization.id), makeMember(organization.id)];
 
-		prismaMock.project.findUnique.mockResolvedValue(project);
+		prismaMock.member.findMany.mockResolvedValue(members);
 
 		const token = signToken(app, userId);
 
 		const response = await app.inject({
 			method: "GET",
-			url: `/organizations/${organization.slug}/projects/${project.slug}`,
+			url: `/organizations/${organization.slug}/members`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
 		expect(response.statusCode).toBe(200);
 		expect(JSON.parse(response.body)).toMatchObject({
-			project: {
-				id: project.id,
-				name: project.name,
-				slug: project.slug,
-				organizationId: organization.id,
-			},
+			members: expect.arrayContaining([
+				expect.objectContaining({ userId: members[0]?.user.id }),
+				expect.objectContaining({ userId: members[1]?.user.id }),
+			]),
 		});
 	});
 
-	it("returns the project for a MEMBER", async () => {
+	it("returns members list for MEMBER", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "MEMBER");
-		const project = makeProject(organization.id, faker.string.uuid());
+		const members = [makeMember(organization.id)];
 
-		prismaMock.project.findUnique.mockResolvedValue(project);
+		prismaMock.member.findMany.mockResolvedValue(members);
 
 		const token = signToken(app, userId);
 
 		const response = await app.inject({
 			method: "GET",
-			url: `/organizations/${organization.slug}/projects/${project.slug}`,
+			url: `/organizations/${organization.slug}/members`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
@@ -102,7 +97,7 @@ describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
 
 		const response = await app.inject({
 			method: "GET",
-			url: `/organizations/${organization.slug}/projects/any-project`,
+			url: `/organizations/${organization.slug}/members`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
@@ -112,30 +107,10 @@ describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
 		});
 	});
 
-	it("returns 400 NOT_FOUND when project does not exist in the organization", async () => {
-		const userId = faker.string.uuid();
-		const { organization } = mockMembership(userId, "ADMIN");
-
-		prismaMock.project.findUnique.mockResolvedValue(null);
-
-		const token = signToken(app, userId);
-
-		const response = await app.inject({
-			method: "GET",
-			url: `/organizations/${organization.slug}/projects/nonexistent-project`,
-			headers: { Authorization: `Bearer ${token}` },
-		});
-
-		expect(response.statusCode).toBe(400);
-		expect(JSON.parse(response.body)).toMatchObject({
-			message: "NOT_FOUND",
-		});
-	});
-
 	it("returns 401 INVALID_TOKEN when not authenticated", async () => {
 		const response = await app.inject({
 			method: "GET",
-			url: "/organizations/some-org/projects/some-project",
+			url: "/organizations/some-org/members",
 		});
 
 		expect(response.statusCode).toBe(401);

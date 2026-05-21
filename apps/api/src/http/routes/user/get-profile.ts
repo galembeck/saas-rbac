@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { UserException } from "@/http/_errors/exceptions/user";
+import { BusinessException } from "@/http/_errors/exceptions/business/business";
 import { auth } from "@/http/middlewares/auth";
 import { prisma } from "@/lib/prisma";
 import { NotFoundError } from "../_errors/not-found-error";
@@ -25,7 +25,7 @@ export async function getProfileRoute(app: FastifyInstance) {
 								id: z.uuid(),
 								name: z.string().nullable(),
 								email: z.string(),
-								avatarUrl: z.string().nullable(),
+								avatarUrl: z.url().nullable(),
 							}),
 						}),
 					},
@@ -47,7 +47,7 @@ export async function getProfileRoute(app: FastifyInstance) {
 				});
 
 				if (!user) {
-					throw new NotFoundError(null, UserException.USER_NOT_FOUND);
+					throw new NotFoundError(null, BusinessException.NOT_FOUND);
 				}
 
 				return reply.status(200).send({ user });

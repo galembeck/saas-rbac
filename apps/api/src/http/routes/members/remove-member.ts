@@ -1,6 +1,5 @@
 /** biome-ignore-all lint/suspicious/useAwait: required by @fastify */
 
-import { projectSchema } from "@repo/rbac/src/models/project.model";
 import { getUserPermissions } from "@repo/rbac/src/utils/get-user-permissions";
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
@@ -12,61 +11,60 @@ import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
 import { UnauthorizedError } from "../_errors/unauthorized-error";
 
-export async function deleteProjectRoute(app: FastifyInstance) {
+export async function removeMemberRoute(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
 		.register(auth)
 		.delete(
-			"/organizations/:slug/projects/:projectId",
+			"/organizations/:slug/members/:memberId",
 			{
 				schema: {
-					tags: ["Projects"],
-					summary: "/organizations/:slug/projects/:projectId",
-					description: "Delete a project inside an organization",
+					tags: ["Members"],
+					summary: "/organizations/:slug/members/:memberId",
+					description: "Remove a member from an organization",
 					security: [{ bearerAuth: [] }],
 					params: z.object({
 						slug: z.string(),
-						projectId: z.uuid(),
+						memberId: z.uuid(),
 					}),
 				},
 			},
 			async (request, reply) => {
-				const { slug, projectId } = request.params;
+				const { slug, memberId } = request.params;
 
 				const userId = await request.getCurrentUserId();
 				const { organization, membership } =
 					await request.getUserMembership(slug);
 
-				const project = await prisma.project.findUnique({
+				const member = await prisma.member.findUnique({
 					where: {
-						id: projectId,
+						id: memberId,
 						organizationId: organization.id,
 					},
 				});
 
-				if (!project) {
+				if (!member) {
 					throw new BadRequestError(
-						"Project not found in this organization.",
+						"Member not found in this organization.",
 						BusinessException.NOT_FOUND,
-						"A valid and existing project ID is required to delete a project in an organization."
+						"A valid and existing member ID is required to remove a member in an organization."
 					);
 				}
 
 				const { cannot } = getUserPermissions(userId, membership.role);
 
-				const authProject = projectSchema.parse(project);
-
-				if (cannot("delete", authProject)) {
+				if (cannot("delete", "User")) {
 					throw new UnauthorizedError(
-						"You are not authorized to delete this project.",
+						"You are not authorized to remove this member.",
 						AuthException.UNAUTHORIZED,
-						"User must have enough permission(s) in order to delete this project."
+						"User must have enough permission(s) in order to remove this member."
 					);
 				}
 
-				await prisma.project.delete({
+				await prisma.member.delete({
 					where: {
-						id: projectId,
+						id: memberId,
+						organizationId: organization.id,
 					},
 				});
 

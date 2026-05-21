@@ -133,7 +133,7 @@ describe("PUT /organizations/:slug/projects/:projectId", () => {
 		});
 	});
 
-	it("returns 400 PROJECT_NOT_FOUND when project does not exist in the organization", async () => {
+	it("returns 400 NOT_FOUND when project does not exist in the organization", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "ADMIN");
 
@@ -150,7 +150,7 @@ describe("PUT /organizations/:slug/projects/:projectId", () => {
 
 		expect(response.statusCode).toBe(400);
 		expect(JSON.parse(response.body)).toMatchObject({
-			message: "PROJECT_NOT_FOUND",
+			message: "NOT_FOUND",
 		});
 	});
 

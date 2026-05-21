@@ -6,7 +6,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { AuthException } from "@/http/_errors/exceptions/auth";
-import { ProjectException } from "@/http/_errors/exceptions/project";
+import { BusinessException } from "@/http/_errors/exceptions/business/business";
 import { auth } from "@/http/middlewares/auth";
 import { prisma } from "@/lib/prisma";
 import { BadRequestError } from "../_errors/bad-request-error";
@@ -51,7 +51,7 @@ export async function updateProjectRoute(app: FastifyInstance) {
 				if (!project) {
 					throw new BadRequestError(
 						"Project not found in this organization.",
-						ProjectException.PROJECT_NOT_FOUND,
+						BusinessException.NOT_FOUND,
 						"A valid and existing project ID is required to delete a project in an organization."
 					);
 				}

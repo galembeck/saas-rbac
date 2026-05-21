@@ -18,24 +18,7 @@ vi.mock("@/lib/prisma", async () => {
 	return { prisma: prismaMock };
 });
 
-function makeProject(organizationId: string, ownerId: string) {
-	return {
-		id: faker.string.uuid(),
-		name: "Test Project",
-		description: "A test project",
-		slug: "test-project",
-		avatarUrl: null,
-		organizationId,
-		ownerId,
-		owner: {
-			id: ownerId,
-			name: faker.person.fullName(),
-			avatarUrl: null,
-		},
-	};
-}
-
-describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
+describe("DELETE /organizations/:slug/members/:memberId", () => {
 	let app: Awaited<ReturnType<typeof buildApp>>;
 
 	beforeAll(async () => {
@@ -50,59 +33,47 @@ describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
 		resetPrismaMocks();
 	});
 
-	it("returns the project for an ADMIN", async () => {
+	it("removes the member when user is ADMIN", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "ADMIN");
-		const project = makeProject(organization.id, faker.string.uuid());
+		const memberId = faker.string.uuid();
 
-		prismaMock.project.findUnique.mockResolvedValue(project);
+		prismaMock.member.findUnique.mockResolvedValue({
+			id: memberId,
+			organizationId: organization.id,
+			userId: faker.string.uuid(),
+			role: "MEMBER",
+		});
+		prismaMock.member.delete.mockResolvedValue({ id: memberId });
 
 		const token = signToken(app, userId);
 
 		const response = await app.inject({
-			method: "GET",
-			url: `/organizations/${organization.slug}/projects/${project.slug}`,
+			method: "DELETE",
+			url: `/organizations/${organization.slug}/members/${memberId}`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
-		expect(response.statusCode).toBe(200);
-		expect(JSON.parse(response.body)).toMatchObject({
-			project: {
-				id: project.id,
-				name: project.name,
-				slug: project.slug,
-				organizationId: organization.id,
-			},
-		});
+		expect(response.statusCode).toBe(204);
 	});
 
-	it("returns the project for a MEMBER", async () => {
+	it("returns 401 UNAUTHORIZED when user is MEMBER", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "MEMBER");
-		const project = makeProject(organization.id, faker.string.uuid());
+		const memberId = faker.string.uuid();
 
-		prismaMock.project.findUnique.mockResolvedValue(project);
-
-		const token = signToken(app, userId);
-
-		const response = await app.inject({
-			method: "GET",
-			url: `/organizations/${organization.slug}/projects/${project.slug}`,
-			headers: { Authorization: `Bearer ${token}` },
+		prismaMock.member.findUnique.mockResolvedValue({
+			id: memberId,
+			organizationId: organization.id,
+			userId: faker.string.uuid(),
+			role: "BILLING",
 		});
 
-		expect(response.statusCode).toBe(200);
-	});
-
-	it("returns 401 UNAUTHORIZED when user is BILLING", async () => {
-		const userId = faker.string.uuid();
-		const { organization } = mockMembership(userId, "BILLING");
-
 		const token = signToken(app, userId);
 
 		const response = await app.inject({
-			method: "GET",
-			url: `/organizations/${organization.slug}/projects/any-project`,
+			method: "DELETE",
+			url: `/organizations/${organization.slug}/members/${memberId}`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
@@ -112,30 +83,54 @@ describe("GET /organizations/:orgSlug/projects/:projectSlug", () => {
 		});
 	});
 
-	it("returns 400 NOT_FOUND when project does not exist in the organization", async () => {
+	it("returns 401 UNAUTHORIZED when user is BILLING", async () => {
 		const userId = faker.string.uuid();
-		const { organization } = mockMembership(userId, "ADMIN");
+		const { organization } = mockMembership(userId, "BILLING");
+		const memberId = faker.string.uuid();
 
-		prismaMock.project.findUnique.mockResolvedValue(null);
+		prismaMock.member.findUnique.mockResolvedValue({
+			id: memberId,
+			organizationId: organization.id,
+			userId: faker.string.uuid(),
+			role: "MEMBER",
+		});
 
 		const token = signToken(app, userId);
 
 		const response = await app.inject({
-			method: "GET",
-			url: `/organizations/${organization.slug}/projects/nonexistent-project`,
+			method: "DELETE",
+			url: `/organizations/${organization.slug}/members/${memberId}`,
+			headers: { Authorization: `Bearer ${token}` },
+		});
+
+		expect(response.statusCode).toBe(401);
+		expect(JSON.parse(response.body)).toMatchObject({
+			message: "UNAUTHORIZED",
+		});
+	});
+
+	it("returns 400 NOT_FOUND when member does not exist in the organization", async () => {
+		const userId = faker.string.uuid();
+		const { organization } = mockMembership(userId, "ADMIN");
+
+		prismaMock.member.findUnique.mockResolvedValue(null);
+
+		const token = signToken(app, userId);
+
+		const response = await app.inject({
+			method: "DELETE",
+			url: `/organizations/${organization.slug}/members/${faker.string.uuid()}`,
 			headers: { Authorization: `Bearer ${token}` },
 		});
 
 		expect(response.statusCode).toBe(400);
-		expect(JSON.parse(response.body)).toMatchObject({
-			message: "NOT_FOUND",
-		});
+		expect(JSON.parse(response.body)).toMatchObject({ message: "NOT_FOUND" });
 	});
 
 	it("returns 401 INVALID_TOKEN when not authenticated", async () => {
 		const response = await app.inject({
-			method: "GET",
-			url: "/organizations/some-org/projects/some-project",
+			method: "DELETE",
+			url: `/organizations/some-org/members/${faker.string.uuid()}`,
 		});
 
 		expect(response.statusCode).toBe(401);

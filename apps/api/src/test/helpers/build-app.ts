@@ -11,6 +11,9 @@ import { authenticateWithGithubRoute } from "@/http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "@/http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "@/http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "@/http/routes/auth/reset-password";
+import { getMembersRoute } from "@/http/routes/members/get-members";
+import { removeMemberRoute } from "@/http/routes/members/remove-member";
+import { updateMemberRoute } from "@/http/routes/members/update-member";
 import { createOrganizationRoute } from "@/http/routes/orgs/create-organization";
 import { deleteOrganizationRoute } from "@/http/routes/orgs/delete-organization";
 import { getMembershipRoute } from "@/http/routes/orgs/get-membership";
@@ -51,6 +54,9 @@ export async function buildApp() {
 	await app.register(updateOrganizationRoute);
 	await app.register(deleteOrganizationRoute);
 	await app.register(transferOwnershipRoute);
+	await app.register(getMembersRoute);
+	await app.register(updateMemberRoute);
+	await app.register(removeMemberRoute);
 	await app.register(createProjectRoute);
 	await app.register(deleteProjectRoute);
 	await app.register(getProjectRoute);
