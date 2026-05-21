@@ -20,6 +20,9 @@ import { transferOwnershipRoute } from "@/http/routes/orgs/transfer-ownership";
 import { updateOrganizationRoute } from "@/http/routes/orgs/update-organization";
 import { createProjectRoute } from "@/http/routes/projects/create-project";
 import { deleteProjectRoute } from "@/http/routes/projects/delete-project";
+import { getProjectRoute } from "@/http/routes/projects/get-project";
+import { getProjectsRoute } from "@/http/routes/projects/get-projects";
+import { updateProjectRoute } from "@/http/routes/projects/update-project";
 import { createAccountRoute } from "@/http/routes/user/create-account";
 import { getProfileRoute } from "@/http/routes/user/get-profile";
 
@@ -50,6 +53,9 @@ export async function buildApp() {
 	await app.register(transferOwnershipRoute);
 	await app.register(createProjectRoute);
 	await app.register(deleteProjectRoute);
+	await app.register(getProjectRoute);
+	await app.register(getProjectsRoute);
+	await app.register(updateProjectRoute);
 
 	await app.ready();
 

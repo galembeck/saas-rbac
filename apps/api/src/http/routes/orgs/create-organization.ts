@@ -26,7 +26,7 @@ export async function createOrganizationRoute(app: FastifyInstance) {
 						domain: z.string().nullish(),
 						shouldAttachUsersByDomain: z.boolean().optional(),
 					}),
-					reponse: {
+					response: {
 						201: z.object({
 							organizationId: z.uuid(),
 						}),

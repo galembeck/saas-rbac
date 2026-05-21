@@ -7,31 +7,42 @@ import { z } from "zod";
 import { AuthException } from "@/http/_errors/exceptions/auth";
 import { auth } from "@/http/middlewares/auth";
 import { prisma } from "@/lib/prisma";
-import { createSlug } from "@/utils/create-slug";
 import { UnauthorizedError } from "../_errors/unauthorized-error";
 
-export async function createProjectRoute(app: FastifyInstance) {
+export async function getProjectsRoute(app: FastifyInstance) {
 	app
 		.withTypeProvider<ZodTypeProvider>()
 		.register(auth)
-		.post(
+		.get(
 			"/organizations/:slug/projects",
 			{
 				schema: {
 					tags: ["Projects"],
 					summary: "/organizations/:slug/projects",
-					description: "Create a new project inside an organization",
+					description: "Get all projects in an organization",
 					security: [{ bearerAuth: [] }],
-					body: z.object({
-						name: z.string(),
-						description: z.string(),
-					}),
 					params: z.object({
 						slug: z.string(),
 					}),
 					response: {
-						201: z.object({
-							projectId: z.uuid(),
+						200: z.object({
+							projects: z.array(
+								z.object({
+									id: z.uuid(),
+									description: z.string(),
+									name: z.string(),
+									slug: z.string(),
+									avatarUrl: z.url().nullable(),
+									organizationId: z.uuid(),
+									ownerId: z.uuid(),
+									createdAt: z.date(),
+									owner: z.object({
+										id: z.uuid(),
+										name: z.string().nullable(),
+										avatarUrl: z.url().nullable(),
+									}),
+								})
+							),
 						}),
 					},
 				},
@@ -45,29 +56,41 @@ export async function createProjectRoute(app: FastifyInstance) {
 
 				const { cannot } = getUserPermissions(userId, membership.role);
 
-				if (cannot("create", "Project")) {
+				if (cannot("get", "Project")) {
 					throw new UnauthorizedError(
-						"You are not authorized to create a project in this organization.",
+						"You are not authorized to see this project.",
 						AuthException.UNAUTHORIZED,
-						"User must have enough permission(s) in order to create a project in this organization."
+						"User must have enough permission(s) in order to see this project."
 					);
 				}
 
-				const { name, description } = request.body;
-
-				const project = await prisma.project.create({
-					data: {
-						name,
-						slug: createSlug(name),
-						description,
+				const projects = await prisma.project.findMany({
+					select: {
+						id: true,
+						name: true,
+						description: true,
+						slug: true,
+						ownerId: true,
+						avatarUrl: true,
+						organizationId: true,
+						createdAt: true,
+						owner: {
+							select: {
+								id: true,
+								name: true,
+								avatarUrl: true,
+							},
+						},
+					},
+					where: {
 						organizationId: organization.id,
-						ownerId: userId,
+					},
+					orderBy: {
+						createdAt: "desc",
 					},
 				});
 
-				return reply.status(201).send({
-					projectId: project.id,
-				});
+				return reply.status(200).send({ projects });
 			}
 		);
 }

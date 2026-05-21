@@ -21,7 +21,7 @@ export async function getMembershipRoute(app: FastifyInstance) {
 					params: z.object({
 						slug: z.string(),
 					}),
-					reponse: {
+					response: {
 						200: z.object({
 							membership: z.object({
 								id: z.uuid(),
