@@ -58,7 +58,7 @@ describe("PUT /organizations/:slug/members/:memberId", () => {
 		expect(response.statusCode).toBe(204);
 	});
 
-	it("updates the member role when user is MEMBER", async () => {
+	it("returns 401 UNAUTHORIZED when user is MEMBER", async () => {
 		const userId = faker.string.uuid();
 		const { organization } = mockMembership(userId, "MEMBER");
 		const memberId = faker.string.uuid();
@@ -69,7 +69,6 @@ describe("PUT /organizations/:slug/members/:memberId", () => {
 			userId: faker.string.uuid(),
 			role: "BILLING",
 		});
-		prismaMock.member.update.mockResolvedValue({ id: memberId });
 
 		const token = signToken(app, userId);
 
@@ -80,7 +79,37 @@ describe("PUT /organizations/:slug/members/:memberId", () => {
 			body: { role: "MEMBER" },
 		});
 
-		expect(response.statusCode).toBe(204);
+		expect(response.statusCode).toBe(401);
+		expect(JSON.parse(response.body)).toMatchObject({
+			message: "UNAUTHORIZED",
+		});
+	});
+
+	it("returns 401 UNAUTHORIZED when user is BILLING", async () => {
+		const userId = faker.string.uuid();
+		const { organization } = mockMembership(userId, "BILLING");
+		const memberId = faker.string.uuid();
+
+		prismaMock.member.findUnique.mockResolvedValue({
+			id: memberId,
+			organizationId: organization.id,
+			userId: faker.string.uuid(),
+			role: "MEMBER",
+		});
+
+		const token = signToken(app, userId);
+
+		const response = await app.inject({
+			method: "PUT",
+			url: `/organizations/${organization.slug}/members/${memberId}`,
+			headers: { Authorization: `Bearer ${token}` },
+			body: { role: "BILLING" },
+		});
+
+		expect(response.statusCode).toBe(401);
+		expect(JSON.parse(response.body)).toMatchObject({
+			message: "UNAUTHORIZED",
+		});
 	});
 
 	it("returns 400 NOT_FOUND when member does not exist in the organization", async () => {
