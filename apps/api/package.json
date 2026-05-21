@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm env:load tsx watch src/server.ts",
+    "db:generate": "pnpm env:load prisma generate",
     "db:migrate": "pnpm env:load prisma migrate dev",
     "db:seed": "pnpm env:load prisma db seed",
     "db:studio": "pnpm env:load prisma studio",

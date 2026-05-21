@@ -16,6 +16,7 @@ import { authenticateWithGithubRoute } from "./http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "./http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "./http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "./http/routes/auth/reset-password";
+import { createInviteRoute } from "./http/routes/invites/create-invite";
 import { getMembersRoute } from "./http/routes/members/get-members";
 import { removeMemberRoute } from "./http/routes/members/remove-member";
 import { updateMemberRoute } from "./http/routes/members/update-member";
@@ -102,6 +103,8 @@ app.register(updateProjectRoute);
 app.register(getMembersRoute);
 app.register(updateMemberRoute);
 app.register(removeMemberRoute);
+
+app.register(createInviteRoute);
 
 app.listen({ port: env.PORT }).then(() => {
 	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);
