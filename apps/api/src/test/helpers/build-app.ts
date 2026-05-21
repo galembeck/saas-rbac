@@ -11,6 +11,7 @@ import { authenticateWithGithubRoute } from "@/http/routes/auth/authenticate-wit
 import { authenticateWithPasswordRoute } from "@/http/routes/auth/authenticate-with-password";
 import { requestPasswordRecoveryRoute } from "@/http/routes/auth/request-password-recovery";
 import { resetPasswordRoute } from "@/http/routes/auth/reset-password";
+import { getBillingRoute } from "@/http/routes/billing/get-billing";
 import { acceptInviteRoute } from "@/http/routes/invites/accept-invite";
 import { createInviteRoute } from "@/http/routes/invites/create-invite";
 import { getInviteRoute } from "@/http/routes/invites/get-invite";
@@ -76,6 +77,7 @@ export async function buildApp() {
 	await app.register(getProjectRoute);
 	await app.register(getProjectsRoute);
 	await app.register(updateProjectRoute);
+	await app.register(getBillingRoute);
 
 	await app.ready();
 

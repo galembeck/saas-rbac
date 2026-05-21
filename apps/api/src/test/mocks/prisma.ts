@@ -24,6 +24,7 @@ export const prismaMock = {
 		create: vi.fn(),
 		update: vi.fn(),
 		delete: vi.fn(),
+		count: vi.fn(),
 	},
 	project: {
 		findUnique: vi.fn(),
@@ -32,6 +33,7 @@ export const prismaMock = {
 		create: vi.fn(),
 		update: vi.fn(),
 		delete: vi.fn(),
+		count: vi.fn(),
 	},
 	invite: {
 		findUnique: vi.fn(),
