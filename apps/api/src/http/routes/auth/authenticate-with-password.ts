@@ -34,11 +34,19 @@ export async function authenticateWithPasswordRoute(app: FastifyInstance) {
 			});
 
 			if (!userFromEmail) {
-				throw new BadRequestError(null, AuthException.INVALID_CREDENTIALS);
+				throw new BadRequestError(
+					"Invalid credentials",
+					AuthException.INVALID_CREDENTIALS,
+					"The e-mail or password is incorrect."
+				);
 			}
 
 			if (userFromEmail?.passwordHash === null) {
-				throw new BadRequestError(null, AuthException.USER_HAS_NO_PASSWORD);
+				throw new BadRequestError(
+					"Invalid credentials",
+					AuthException.USER_HAS_NO_PASSWORD,
+					"The user does not have a password set, use social login."
+				);
 			}
 
 			const isPasswordValid = await compare(
@@ -47,7 +55,11 @@ export async function authenticateWithPasswordRoute(app: FastifyInstance) {
 			);
 
 			if (!isPasswordValid) {
-				throw new BadRequestError(null, AuthException.INVALID_CREDENTIALS);
+				throw new BadRequestError(
+					"Invalid credentials",
+					AuthException.INVALID_CREDENTIALS,
+					"The e-mail or password is incorrect."
+				);
 			}
 
 			const accessToken = await reply.jwtSign(

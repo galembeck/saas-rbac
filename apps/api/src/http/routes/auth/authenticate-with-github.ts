@@ -86,19 +86,52 @@ export async function authenticateWithGithubRoute(app: FastifyInstance) {
 				})
 				.parse(githubUserData);
 
-			if (email === null) {
-				throw new BadRequestError(null, AuthException.GITHUB_NO_EMAIL);
+			let resolvedEmail = email;
+
+			if (resolvedEmail === null) {
+				const emailsResponse = await fetch(
+					"https://api.github.com/user/emails",
+					{
+						headers: {
+							Authorization: `Bearer ${githubAccessToken}`,
+						},
+					}
+				);
+
+				const emailsData = await emailsResponse.json();
+
+				const emails = z
+					.array(
+						z.object({
+							email: z.string().email(),
+							primary: z.boolean(),
+							verified: z.boolean(),
+						})
+					)
+					.parse(emailsData);
+
+				const primaryEmail = emails.find((e) => e.primary && e.verified);
+
+				if (!primaryEmail) {
+					throw new BadRequestError(
+						"Invalid credentials",
+						AuthException.GITHUB_NO_EMAIL,
+						"The user does not have an email associated with their GitHub account."
+					);
+				}
+
+				resolvedEmail = primaryEmail.email;
 			}
 
 			let user = await prisma.user.findUnique({
-				where: { email },
+				where: { email: resolvedEmail },
 			});
 
 			if (!user) {
 				user = await prisma.user.create({
 					data: {
 						name,
-						email,
+						email: resolvedEmail,
 						avatarUrl: githubAvatarUrl,
 					},
 				});
