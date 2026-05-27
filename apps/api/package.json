@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm env:load tsx watch src/server.ts",
-    "build": "pnpm db:generate tsup",
-    "start": "pnpm db:generate node dist/server.js",
-    "db:generate": "pnpm env:load prisma generate --",
+    "build": "tsup",
+    "start": "node dist/server.js",
+    "db:generate": "pnpm env:load prisma generate",
     "db:migrate": "pnpm env:load prisma migrate dev",
     "db:seed": "pnpm env:load prisma db seed",
     "db:studio": "pnpm env:load prisma studio",
