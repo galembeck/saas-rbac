@@ -121,7 +121,7 @@ app.register(getPendingInvitesRoute);
 
 app.register(getBillingRoute);
 
-app.listen({ port: env.PORT }).then(() => {
+app.listen({ port: env.PORT, host: "0.0.0.0" }).then(() => {
 	console.log(`🚀 | HTTP server running at http://localhost:${env.PORT}`);
 	console.log(`📝 | Docs available at http://localhost:${env.PORT}/docs`);
 });
