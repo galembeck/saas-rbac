@@ -1,6 +1,7 @@
 {
   "extends": "@repo/typescript-config/node.json",
   "include": ["src/**/*"],
+  "ignoreDeprecations": "6.0",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
