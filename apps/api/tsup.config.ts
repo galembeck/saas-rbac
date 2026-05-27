@@ -6,5 +6,5 @@ export default defineConfig({
 	splitting: false,
 	sourcemap: true,
 	clean: true,
-	noExternal: ["@repo/auth", "@repo/env"],
+	noExternal: ["@repo/rbac", "@repo/env"],
 });
