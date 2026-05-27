@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm env:load tsx watch src/server.ts",
+    "build": "tsup src/server.ts",
     "db:generate": "pnpm env:load prisma generate",
     "db:migrate": "pnpm env:load prisma migrate dev",
     "db:seed": "pnpm env:load prisma db seed",
@@ -40,6 +41,7 @@
     "dotenv-cli": "^11.0.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
