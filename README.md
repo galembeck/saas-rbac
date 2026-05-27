@@ -13,7 +13,7 @@ A full-stack multi-tenant SaaS boilerplate with fine-grained Role-Based Access C
 | API client | ky v2, TanStack Query v5 |
 | Database | PostgreSQL (via Docker) |
 | Monorepo | Turborepo + pnpm workspaces |
-| Linting | Biome via Ultracite |
+| Linting | Biome via Ultracite  |
 
 ## Monorepo Structure
 
