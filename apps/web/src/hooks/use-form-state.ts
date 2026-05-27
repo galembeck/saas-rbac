@@ -1,4 +1,5 @@
 import { type SubmitEvent, useState, useTransition } from "react";
+import { requestFormReset } from "react-dom";
 
 interface FormState {
 	description: string | null;
@@ -9,7 +10,7 @@ interface FormState {
 
 export function useFormState(
 	action: (data: FormData) => Promise<FormState>,
-	onSuccess: () => Promise<void> | void,
+	onSuccess?: () => Promise<void> | void,
 	initialState?: FormState
 ) {
 	const [isPending, startTransition] = useTransition();
@@ -38,6 +39,8 @@ export function useFormState(
 
 			setFormState(result);
 		});
+
+		requestFormReset(form);
 	}
 
 	return [formState, handleSubmit, isPending] as const;

@@ -4,7 +4,7 @@ import { AlertTriangle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInWithGithub } from "@/app/auth/_actions/actions";
-import { GithubIcon } from "@/components/icon/github-icon";
+import { GithubIcon } from "@/components/icons/github-icon";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,7 +60,7 @@ export function SignUpForm({ githubError }: SignUnFormProps) {
 					</Alert>
 				)}
 
-				<div className="space-y-1">
+				<div className="space-y-3">
 					<Label htmlFor="name">Name</Label>
 
 					<Input id="name" name="name" placeholder="John Doe" />
@@ -72,7 +72,7 @@ export function SignUpForm({ githubError }: SignUnFormProps) {
 					)}
 				</div>
 
-				<div className="space-y-1">
+				<div className="space-y-3">
 					<Label htmlFor="email">E-mail</Label>
 
 					<Input
@@ -89,7 +89,7 @@ export function SignUpForm({ githubError }: SignUnFormProps) {
 					)}
 				</div>
 
-				<div className="space-y-1">
+				<div className="space-y-3">
 					<Label htmlFor="password">Password</Label>
 
 					<Input
@@ -106,7 +106,7 @@ export function SignUpForm({ githubError }: SignUnFormProps) {
 					)}
 				</div>
 
-				<div className="space-y-1">
+				<div className="space-y-3">
 					<Label htmlFor="password_confirmation">Confirm password</Label>
 
 					<Input

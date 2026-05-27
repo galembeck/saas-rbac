@@ -72,7 +72,7 @@ export async function getBillingRoute(app: FastifyInstance) {
 
 					prisma.project.count({
 						where: {
-							organizationId: organization,
+							organizationId: organization.id,
 						},
 					}),
 				]);

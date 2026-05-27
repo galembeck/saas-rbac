@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -17,10 +18,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
-			className={cn("dark h-full antialiased", "font-sans", inter.variable)}
+			className={cn("h-full antialiased", "font-sans", inter.variable)}
 			lang="en"
+			suppressHydrationWarning
 		>
-			<body className="flex min-h-full flex-col">{children}</body>
+			<body className="flex min-h-full flex-col">
+				<Providers>{children}</Providers>
+			</body>
 		</html>
 	);
 }

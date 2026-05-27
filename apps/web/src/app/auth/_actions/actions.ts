@@ -1,5 +1,6 @@
 "use server";
 
+import { env } from "@repo/env";
 import { redirect } from "next/navigation";
 
 // biome-ignore lint/suspicious/useAwait: required by "use server"
@@ -9,10 +10,10 @@ export async function signInWithGithub() {
 		"https://github.com"
 	);
 
-	githubSignInUrl.searchParams.set("client_id", "Ov23liP43vNnUIihJmCs");
+	githubSignInUrl.searchParams.set("client_id", env.GITHUB_OAUTH_CLIENT_ID);
 	githubSignInUrl.searchParams.set(
 		"redirect_uri",
-		"http://localhost:3000/api/auth/callback"
+		env.GITHUB_OAUTH_REDIRECT_URI
 	);
 	githubSignInUrl.searchParams.set("scope", "user");
 

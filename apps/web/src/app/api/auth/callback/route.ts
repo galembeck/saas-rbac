@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { acceptInvite } from "@/api/http/services/accept-invite";
 import { signInWithGithub } from "@/api/http/services/sign-in-with-github";
 
 export async function GET(request: NextRequest) {
@@ -20,6 +21,17 @@ export async function GET(request: NextRequest) {
 			path: "/",
 			maxAge: 60 * 60 * 24 * 7,
 		});
+
+		const inviteId = (await cookies()).get("inviteId")?.value;
+
+		if (inviteId) {
+			try {
+				await acceptInvite(inviteId);
+
+				(await cookies()).delete("inviteId");
+				// biome-ignore lint/suspicious/noEmptyBlockStatements: already validated by the API
+			} catch {}
+		}
 
 		return NextResponse.redirect(new URL("/", request.nextUrl.origin));
 	} catch {
